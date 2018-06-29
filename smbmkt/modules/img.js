@@ -19,7 +19,7 @@ let DetectShoe = function (ImageUrl, fileName) {
             method: 'POST',
             url: process.env.API_SHOE_DETECTOR + "/ImagePreprocess",
             headers: { 'Content-Type': 'application/json' },
-            body: { ImageUrl:  ImageUrl, id: ImageUrl},
+            body: { ImageUrl:  ImageUrl, Id: fileName},
             json: true
         };
 
@@ -38,10 +38,10 @@ let DetectShoe = function (ImageUrl, fileName) {
             else {
                 if (body.CroppedImageUrl != "") {
                     console.log("Shoe Detected on /n " + body.CroppedImageUrl)
-                    resolve(body.CroppedImageUrl, fileName)
+                    resolve(body.CroppedImageUrl, body.Id)
                 } else {
                     Console.log("YOLO - " + body.Message)
-                    reject(ImageUrl, fileName)
+                    reject(body.OrigImageUrl, body.Id)
                 }
             }
         });

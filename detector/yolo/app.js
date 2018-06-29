@@ -101,6 +101,8 @@ app.post('/ImagePreprocess', (req, res) => {
     if (req.body && req.body.ImageUrl) {
         darknetProxy.ImagePreprocess(req.body.ImageUrl, req.body.Threshold)
         .then(result => {
+            result.Id = req.body.Id || null
+            result.OrigImageUrl = req.body.ImageUrl
             res.status(200).json(result);
         })
         .catch(error => {
