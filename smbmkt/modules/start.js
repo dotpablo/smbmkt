@@ -21,6 +21,7 @@ const leo = require("./leo")
 const biz = require("./biz")
 const b1 = require("./erp/b1")
 const byd = require("./erp/byd")
+const img = require("./img")
 const normalize = require("./normalize")
 
 
@@ -59,7 +60,7 @@ function loadErpItems(origin, query, callback) {
     erp = eval(origin);
 
     erp.GetItems(query, function (error, items) {
-        var output = {} 
+        var output = {}
         if (error) {
             output[origin] = { values: error }
             callback(origin)
@@ -133,13 +134,20 @@ let DowloadAllImages = function (rows) {
     return new Promise(function (resolve, reject) {
         var downloaded = 0;;
         for (i in rows) {
-            biz.DownloadImage(rows[i].image, biz.RowToFile(rows[i]), function (imgPath) {
-                downloaded++
-                if (downloaded == rows.length) {
-                    console.log("All images downloaded!")
-                    resolve();
-                }
+            img.DetectShoe(rows[i].image,biz.RowToFile(rows[i])).then(function (CroppedImageUrl,fileName) {
+                biz.DownloadImage(CroppedImageUrl, fileName, function (imgPath) {
+                    downloaded++
+                })
+
+            }).catch(function (OriginalimageUrl,fileName) {
+                biz.DownloadImage(OriginalimageUrl,fileName , function (imgPath) {
+                    downloaded++
+                })
             })
+        }
+        if (downloaded == rows.length) {
+            console.log("All images downloaded!")
+            resolve();
         }
     })
 }
